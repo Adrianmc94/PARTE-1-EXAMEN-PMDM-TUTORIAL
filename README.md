@@ -1,37 +1,42 @@
-# PARTE-1-EXAMEN-PMDM-TUTORIAL
+# Examen PMDM: Roll a Ball Pro - IA y Mecánicas Avanzadas
 
-# Mejoras de Gameplay: Roll a Ball Pro
-
-Este documento detalla la implementación de las mecánicas de juego avanzadas: el sistema de recolección, la interfaz de usuario (UI) de estado y el sistema de cámara dinámica.
+Este proyecto expande el tutorial básico de Unity "Roll a Ball", integrando sistemas de inteligencia artificial, gestión de estados, recolección y una interfaz de usuario completa.
 
 
-## 1. Sistema de Cámara
-Para que el proyecto se comporte como un videojuego en tercera persona, se ha implementado un script de seguimiento:
+## 1. Implementación de la IA 
+El enemigo (cubo) posee un comportamiento dinámico basado en la posición del jugador:
+* **Detección de Contacto (Debug):** Se utiliza el método `OnCollisionEnter` para lanzar un mensaje por consola al producirse un choque físico.
+* **Variantes de Detección:** * `OnCollisionEnter`: Usada para impactos físicos (el cubo es sólido).
+    * `OnTriggerEnter`: Usada para recolectables (la bola los atraviesa).
+    * `OnCollisionStay`: Podría usarse para daño continuo mientras se toca al enemigo.
+
+
+## 2. Movimiento y Física del Jugador
+* **Fuerza Aplicada:** El movimiento se realiza mediante `rb.AddForce` en el método `FixedUpdate`, cumpliendo con el requisito de usar físicas en lugar de traslación directa.
+* **Control:** Configurado mediante `Input.GetAxis` para soporte de teclado (WASD/Flechas).
+* **Salto:** Se ha implementado un impulso vertical instantáneo usando `ForceMode.Impulse`.
+
+
+## 3. Sistema de Cámara Dinámica
+Para una experiencia de juego en tercera persona:
 * **Lógica de Offset:** En el `Start`, el script calcula la distancia inicial entre la cámara y el jugador.
-* **LateUpdate:** Se utiliza este método para actualizar la posición de la cámara. Al ejecutarse justo después del movimiento del jugador, se eliminan los temblores (jittering), manteniendo la perspectiva constante mientras la bola rueda.
-* 
-
-## 2. Mecánica de Recolectables (Monedas)
-Las monedas utilizan un sistema de detección pasiva para no frenar el avance del jugador:
-* **Is Trigger:** Se ha activado esta opción en el Collider de las monedas para que la bola pueda "atravesarlas".
-* **Script Rotator:** Mediante `transform.Rotate`, las monedas giran constantemente sobre sus tres ejes, dándoles un aspecto visual dinámico.
-* **Recolección:** El script del jugador detecta el tag **"Moneda"** mediante `OnTriggerEnter` y utiliza `gameObject.SetActive(false)` para hacerlas desaparecer de la escena al contacto.
+* **LateUpdate:** Se utiliza este método para que la cámara se mueva justo después que el jugador, evitando vibraciones (jittering) y manteniendo una perspectiva fluida.
 
 
-## 3. Interfaz de Usuario (UI) y Lógica de Estados
-Se ha integrado un sistema de feedback visual mediante **TextMeshPro** para informar al jugador de su progreso:
-
-### Condición de Victoria
-* **Contador:** El `PlayerController` lleva una variable entera que aumenta con cada moneda recogida.
-* **Activación:** Al alcanzar el número total de monedas, se activa un objeto de texto en pantalla con el mensaje "¡HAS GANADO!" en color verde.
-
-### Condición de Derrota
-* **Detección de Peligro:** Si el jugador colisiona físicamente con un objeto etiquetado como **"Enemigo"**, el script activa el mensaje "¡HAS PERDIDO!" en color rojo.
-* **Paralización:** Al perder, se desactiva el script de movimiento y se detiene la velocidad del Rigidbody para que el jugador no pueda seguir moviéndose.
+## 4. Mecánica de Recolectables (Monedas)
+* **Is Trigger:** Configurado en los Colliders para permitir que la bola recoja los objetos sin chocar con ellos.
+* **Script Rotator:** Uso de `transform.Rotate` para dar feedback visual de que el objeto es un ítem especial.
+* **Recolección:** Uso de `OnTriggerEnter` y `CompareTag("Moneda")` para gestionar la desaparición del objeto y sumar puntos al contador.
 
 
-## 4. Estructura de Tags Utilizada
-Para que el código identifique correctamente cada interacción, se han configurado los siguientes identificadores en el Inspector:
-* **Player:** Asignado a la bola principal.
-* **Moneda:** Asignado a todos los objetos recolectables.
-* **Enemigo:** Asignado al cubo que persigue al jugador.
+## 5. Interfaz de Usuario (UI) y Gestión de Escena
+Se utiliza **TextMeshPro** para el feedback en tiempo real:
+* **Victoria:** Al recoger todas las monedas, se activa el mensaje "¡HAS GANADO!" en verde.
+* **Derrota:** Al colisionar con el enemigo, el mensaje "¡HAS PERDIDO!" aparece en rojo y se congela el movimiento del jugador.
+* **Zona de Muerte:** Si el jugador cae al vacío (Y < -10), se utiliza `SceneManager.LoadScene` para reiniciar el nivel automáticamente.
+
+
+## 6. Estructura de Tags (Configuración del Inspector)
+* **Player:** Bola principal.
+* **Moneda:** Objetos recolectables.
+* **Enemigo:** Cubo con IA de persecución.
