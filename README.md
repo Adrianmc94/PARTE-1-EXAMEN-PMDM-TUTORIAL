@@ -40,3 +40,6 @@ Se utiliza **TextMeshPro** para el feedback en tiempo real:
 * **Player:** Bola principal.
 * **Moneda:** Objetos recolectables.
 * **Enemigo:** Cubo con IA de persecución.
+
+  <img width="1052" height="605" alt="Captura desde 2026-02-20 11-42-59" src="https://github.com/user-attachments/assets/bac1d3a0-cc1c-4ae7-bc97-4c15daff0d3a" />
+
